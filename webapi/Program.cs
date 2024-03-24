@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using System.Configuration;
+using webapi.Context;
+using webapi.Repository;
 
 namespace webapi
 {
@@ -7,12 +11,20 @@ namespace webapi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+           
+            
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+
+            builder.Services.AddTransient<IPessoaRepository, PessoaRepository>();
+            
+            builder.Services.AddSqlite<ApiDbContext>(builder.Configuration.GetConnectionString("MinhaConexao"));
+            SQLitePCL.Batteries.Init();
+         
 
             var app = builder.Build();
 
