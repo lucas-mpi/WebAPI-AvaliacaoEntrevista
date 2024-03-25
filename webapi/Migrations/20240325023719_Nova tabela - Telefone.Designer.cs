@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using webapi.Context;
 
@@ -10,9 +11,11 @@ using webapi.Context;
 namespace webapi.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240325023719_Nova tabela - Telefone")]
+    partial class NovatabelaTelefone
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
@@ -47,12 +50,14 @@ namespace webapi.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("NumeroTelefone")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("PessoaId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Tipo")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("TelefoneId");

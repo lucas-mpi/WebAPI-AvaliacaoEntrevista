@@ -8,6 +8,7 @@ namespace webapi.Context
     {
 
         public DbSet<Pessoa> Pessoa { get; set; }
+        public DbSet<Telefone> Telefone { get; set; }
 
         
         

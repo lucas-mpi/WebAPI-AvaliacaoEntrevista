@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using webapi.Interfaces;
 using webapi.Models;
-using webapi.Repository;
 using webapi.ViewModel;
 
 namespace webapi.Controllers
@@ -10,27 +10,59 @@ namespace webapi.Controllers
     public class PessoaController : ControllerBase
     {
         private readonly IPessoaRepository _pessoaRepository;
+       
 
         public PessoaController(IPessoaRepository pessoaRepository)
         {
-            _pessoaRepository = pessoaRepository ?? throw new ArgumentNullException(nameof(pessoaRepository));
+            _pessoaRepository = pessoaRepository;
+            
         }
 
         [HttpPost]
-        public IActionResult Add(PessoaViewModel pessoaView)
+        public IActionResult Add(PessoaTelefoneViewModel pessoaTelefoneViewModel)
         {
-            var pessoa = new Pessoa(pessoaView.Nome, pessoaView.Cpf, pessoaView.DataNascimento);
-            _pessoaRepository.Add(pessoa);
 
-            return Ok();
+            var pessoa = new Pessoa(
+                pessoaTelefoneViewModel.Pessoa.Nome,
+                pessoaTelefoneViewModel.Pessoa.Cpf,
+                pessoaTelefoneViewModel.Pessoa.DataNascimento
+                
+             );
+           
+           var telefones = new List<Telefone>();
+
+            foreach (var telefoneViewModel in pessoaTelefoneViewModel.Telefones)
+            {
+                var telefone = new Telefone
+                {
+                    NumeroTelefone = telefoneViewModel.NumeroTelefone,
+                    Tipo = telefoneViewModel.Tipo
+                };
+                telefones.Add(telefone);
+            }
+
+            pessoa.Telefones = telefones;
+
+            _pessoaRepository.Add(pessoa);
+           
+
+            return Created();
         }
 
-
+        
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetPessoaTelefone()
         {
-            var pessoa = _pessoaRepository.Get();
-            return Ok(pessoa);
+            var pessoa = _pessoaRepository.GetPessoasWithTelefone();
+            if (pessoa == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(pessoa);
+            }
+            
 
         }
 
@@ -38,7 +70,15 @@ namespace webapi.Controllers
         public IActionResult GetById(int id)
         {
             var consultaPessoa = _pessoaRepository.GetById(id);
-            return Ok(consultaPessoa);  
+            if (consultaPessoa == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(consultaPessoa);
+            }
+             
         }
 
 
@@ -46,21 +86,42 @@ namespace webapi.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, Pessoa pessoa)
         {
+
             var consultaPessoa = _pessoaRepository.GetById(id);
 
-            _pessoaRepository.Update(pessoa);
-            return Ok();
+            if (consultaPessoa == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                _pessoaRepository.Update(pessoa);
+                return Ok();
+            }
+            
 
         }
         
 
 
 
+
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            _pessoaRepository.Delete(id);
-            return Ok();
+            var consultaPessoa = _pessoaRepository.GetById(id);
+            if (consultaPessoa == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                _pessoaRepository.Delete(id);
+                return Ok();
+            }
+           
+            
+            
         }
     }
 

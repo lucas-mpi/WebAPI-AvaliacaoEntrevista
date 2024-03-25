@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using webapi.Context;
+using webapi.Interfaces;
 using webapi.Repository;
 
 namespace webapi
@@ -21,6 +22,7 @@ namespace webapi
 
 
             builder.Services.AddTransient<IPessoaRepository, PessoaRepository>();
+            builder.Services.AddTransient<ITelefoneRepository, TelefoneRepository>();
             
             builder.Services.AddSqlite<ApiDbContext>(builder.Configuration.GetConnectionString("MinhaConexao"));
             SQLitePCL.Batteries.Init();

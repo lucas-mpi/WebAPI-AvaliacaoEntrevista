@@ -1,4 +1,7 @@
-﻿using webapi.Context;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using webapi.Context;
+using webapi.Interfaces;
 using webapi.Models;
 
 namespace webapi.Repository
@@ -21,23 +24,27 @@ namespace webapi.Repository
             _context.SaveChanges();
         }
 
-
-        public List<Pessoa> Get()
-        {
-            return _context.Pessoa.ToList();
-        }
-
+       
         public IQueryable<Pessoa> GetById(int id)
         {
-            return _context.Pessoa.Where(p => p.PessoaId == id);
+            return _context.Pessoa.Where(p => p.PessoaId == id).Include(p => p.Telefones);
+        }
+
+        public IQueryable<Pessoa> GetPessoasWithTelefone()
+        {
+            return _context.Pessoa.Include(p => p.Telefones);
         }
        
 
         public void Delete(int id)
         {
             var pessoa = _context.Pessoa.Find(id);
-            _context.Pessoa.Remove(pessoa);
-            _context.SaveChanges();
+            if (pessoa != null)
+            {
+                _context.Pessoa.Remove(pessoa);
+                _context.SaveChanges();
+            }
+            
         }
 
         public void Update(Pessoa pessoa)
@@ -45,5 +52,7 @@ namespace webapi.Repository
             _context.Pessoa.Update(pessoa);
             _context.SaveChanges();
         }
+
+
     }
 }
